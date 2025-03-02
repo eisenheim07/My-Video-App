@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "460816281562",
+    "project_id": "hivefive-4a12c",
+    "storage_bucket": "hivefive-4a12c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:460816281562:android:8ff843163d4736f9cc5ae3",
+        "android_client_info": {
+          "package_name": "com.example.hivefive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCACmOSdY6utUA288k4iK6Z81rr2C1xe5A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
