@@ -1,7 +1,6 @@
 package com.example.hivefive.ui.views
 
 import android.app.Activity
-import android.content.Context
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -45,6 +44,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 fun firebaseAuthWithGoogle(idToken: String, auth: FirebaseAuth, navController: NavHostController) {
@@ -52,11 +52,24 @@ fun firebaseAuthWithGoogle(idToken: String, auth: FirebaseAuth, navController: N
     auth.signInWithCredential(credential)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                navController.navigate("home") {
-                    popUpTo("login") {
-                        inclusive = true
+                val db = Firebase.firestore
+                val user = HashMap<String, String>()
+                user["uuid"] = auth.currentUser?.uid.toString()
+                user["name"] = auth.currentUser?.displayName.toString()
+                user["imgUrl"] = auth.currentUser?.photoUrl.toString()
+                user["status"] = "ONLINE"
+                db.collection("users")
+                    .add(user)
+                    .addOnSuccessListener {
+                        navController.navigate("home") {
+                            popUpTo("login") {
+                                inclusive = true
+                            }
+                        }
                     }
-                }
+                    .addOnFailureListener { e ->
+                        Log.w("TAG", "Error adding document", e)
+                    }
             } else {
                 Log.e("GoogleSignIn", "Firebase Auth Failed", task.exception)
             }

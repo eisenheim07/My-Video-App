@@ -1,9 +1,10 @@
 package com.example.hivefive.ui.views
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun HomePage() {
-    Text(text = "HELLO")
+fun HomePage(navController: NavHostController, auth: FirebaseUser?) {
+
 }

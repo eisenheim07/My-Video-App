@@ -43,7 +43,7 @@ fun NavHostScreen() {
     val auth = FirebaseAuth.getInstance().currentUser
     var start = "login"
     auth?.let {
-        start = "home"
+        start = "login"
     }
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = start) {
@@ -51,7 +51,7 @@ fun NavHostScreen() {
             LoginPage(navController)
         }
         composable("home") {
-            HomePage()
+            HomePage(navController, auth)
         }
     }
 }
