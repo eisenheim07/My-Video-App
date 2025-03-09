@@ -16,7 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hivefive.ui.theme.HiveFiveTheme
 import com.example.hivefive.ui.views.HomePage
 import com.example.hivefive.ui.views.LoginPage
-import com.google.firebase.auth.FirebaseAuth
+import com.example.hivefive.ui.views.SignupPage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,18 +40,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NavHostScreen() {
-    val auth = FirebaseAuth.getInstance().currentUser
-    var start = "login"
-    auth?.let {
-        start = "login"
-    }
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = start) {
+    NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             LoginPage(navController)
         }
         composable("home") {
-            HomePage(navController, auth)
+            HomePage(navController)
+        }
+        composable("signup") {
+            SignupPage(navController)
         }
     }
 }

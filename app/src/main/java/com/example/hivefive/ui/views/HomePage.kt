@@ -5,6 +5,6 @@ import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun HomePage(navController: NavHostController, auth: FirebaseUser?) {
+fun HomePage(navController: NavHostController) {
 
 }
