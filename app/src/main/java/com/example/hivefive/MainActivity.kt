@@ -1,6 +1,7 @@
 package com.example.hivefive
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,7 +18,10 @@ import com.example.hivefive.ui.theme.HiveFiveTheme
 import com.example.hivefive.ui.views.HomePage
 import com.example.hivefive.ui.views.LoginPage
 import com.example.hivefive.ui.views.SignupPage
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,13 +44,18 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NavHostScreen() {
+    val auth = FirebaseAuth.getInstance()
+    var start = "login"
+    if (auth.currentUser != null) {
+        start = "home"
+    }
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = start) {
         composable("login") {
             LoginPage(navController)
         }
         composable("home") {
-            HomePage(navController)
+            HomePage(navController, auth)
         }
         composable("signup") {
             SignupPage(navController)

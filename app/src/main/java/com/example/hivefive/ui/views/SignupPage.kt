@@ -1,6 +1,7 @@
 package com.example.hivefive.ui.views
 
-import androidx.compose.foundation.border
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -27,17 +27,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.hivefive.helper.Globals
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
 fun SignupPage(navController: NavHostController) {
+    val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
@@ -136,9 +145,47 @@ fun SignupPage(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(modifier = Modifier.fillMaxWidth(), onClick = {
-
+            if (isPasswordValid && isEmailValid && password.isNotEmpty() && email.isNotEmpty()) {
+                val auth = FirebaseAuth.getInstance()
+                auth.createUserWithEmailAndPassword(email, password)
+                    .addOnSuccessListener {
+                        val firestore = FirebaseFirestore.getInstance()
+                        insertData(firestore, email, password) { callBack ->
+                            if (callBack) {
+                                Toast.makeText(context, "Signup Successfully.", Toast.LENGTH_LONG).show()
+                                navController.navigate("login") {
+                                    popUpTo("signup") {
+                                        inclusive = true
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(context, "Invalid User.", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Something went wrong, ${it.message}", Toast.LENGTH_LONG).show()
+                    }
+            }
         }) {
             Text(text = "Signup")
         }
     }
+}
+
+fun insertData(firestore: FirebaseFirestore, email: String, password: String, callback: (Boolean) -> Unit) {
+    val user = hashMapOf(
+        "email" to email,
+        "password" to password,
+        "status" to "OFFLINE",
+        "createdAt" to LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
+    )
+
+    firestore.collection("users").add(user)
+        .addOnSuccessListener {
+            callback(true)
+        }
+        .addOnFailureListener {
+            callback(false)
+        }
 }
