@@ -1,6 +1,5 @@
 package com.example.hivefive.ui.views
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,10 +34,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.hivefive.helper.Globals
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -153,7 +150,7 @@ fun SignupPage(navController: NavHostController) {
                         insertData(firestore, email, password) { callBack ->
                             if (callBack) {
                                 Toast.makeText(context, "Signup Successfully.", Toast.LENGTH_LONG).show()
-                                navController.navigate("login") {
+                                navController.navigate("home") {
                                     popUpTo("signup") {
                                         inclusive = true
                                     }
@@ -177,11 +174,11 @@ fun insertData(firestore: FirebaseFirestore, email: String, password: String, ca
     val user = hashMapOf(
         "email" to email,
         "password" to password,
-        "status" to "OFFLINE",
+        "status" to false,
         "createdAt" to LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
     )
 
-    firestore.collection("users").add(user)
+    firestore.collection("users").document(email).set(user)
         .addOnSuccessListener {
             callback(true)
         }
